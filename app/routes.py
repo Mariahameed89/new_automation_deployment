@@ -23,6 +23,7 @@ main_bp = Blueprint('main', __name__)
 g_driver = None
 
 
+
 def browser_init():
     global g_driver
     if g_driver is None:
@@ -44,26 +45,23 @@ def browser_init():
             }
             # Set Chrome options
             chrome_options = Options()
-            chrome_options.add_argument("--headless=new")  # Ensure headless mode is enabled
-            chrome_options.add_argument("--disable-extensions")  # Disable extensions
-            chrome_options.add_argument("--no-sandbox")  # Required for Heroku
+            # chrome_options.add_argument("--headless=new")
+            chrome_options.add_argument("--disable-extensions")
+            chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-gpu")
             chrome_options.add_argument("--disable-dev-shm-usage")
             chrome_options.add_argument("--ignore-certificate-errors")
             chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-            chrome_options.add_argument(
-                "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-            
-
+            chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 
             # Set up the WebDriver
             # local environment
-          #  g_driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+            g_driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
             # Heroku environment
-            chromedriver_path = "/app/.chrome-for-testing/chromedriver-linux64/chromedriver"
-            g_driver = webdriver.Chrome(service=Service(chromedriver_path), options=chrome_options, seleniumwire_options=proxy_options)
-            
+            # chromedriver_path = "/app/.chrome-for-testing/chromedriver-linux64/chromedriver"
+            # g_driver = webdriver.Chrome(service=Service(chromedriver_path), options=chrome_options, seleniumwire_options=proxy_options)
+            #
 
             # Open a new browser window
             g_driver.execute_script("window.open('');")
@@ -84,6 +82,7 @@ def cleanup_driver():
     if g_driver is not None:
         g_driver.quit()
         g_driver = None
+
 
 
 

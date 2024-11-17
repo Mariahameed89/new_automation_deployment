@@ -23,6 +23,8 @@ def create_app():
     from .routes import main_bp
     app.register_blueprint(main_bp)
 
-    # Do not call db.create_all() here
+    # Create the database tables if they don't exist
+    with app.app_context():
+        db.create_all()
 
     return app

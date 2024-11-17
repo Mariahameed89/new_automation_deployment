@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Orders</title>
+    <style>
+        /* Your existing styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 30px;
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #f8b400;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #555;
+        }
+
+        th {
+            background-color: #333;
+        }
+
+        td {
+            background-color: #444;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .footer a {
+            color: yellow;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>View Orders</h1>
+
+        <!-- Table to display orders -->
+        {% if orders %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Password</th>
+                        <th>Big Link</th>
+                        <th>Email</th>
+                        <th>Access Code</th>
+                        <th>Pin Code</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order.order_id }}</td>
+                            <td>{{ order.password }}</td>
+                            <td>{{ order.big_link }}</td>
+                            <td>{{ order.email }}</td>
+                            <td>{{ order.access_code }}</td>
+                            <td>{{ order.pin_code }}</td>
+                            
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No orders found.</p>
+        {% endif %}
+        
+        <div class="footer">
+            <a href="{{ url_for('main.index') }}">Back to Admin</a>
+        </div>
+    </div>
+</body>
+</html>

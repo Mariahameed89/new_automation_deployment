@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Request</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 600px;
+            background-color: #1a1a1a;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #f8b400;
+            text-align: center;
+        }
+        label {
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 10px;
+            color: #ddd;
+        }
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #555;
+            border-radius: 8px;
+            background-color: #333;
+            color: #f8f8f8;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+        input[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background-color: #f8b400;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s;
+        }
+        input[type="submit"]:hover {
+            background-color: #ffbf00;
+        }
+        /* Popup Styling */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .popup-content {
+            background: #fff;
+            color: #000;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            text-align: center;
+        }
+        .popup-content h2 {
+            margin-bottom: 0px;
+            height: 20px !important;
+        }
+        .infoMessage {
+            height: max-content;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .close-btn {
+            background-color: #f8b400;
+            color: #000;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1.1rem;
+        }
+        /* Center the footer content */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* Style the link inside the footer */
+        .footer a {
+            color: yellow;
+            text-decoration: none;
+        }
+
+        /* Add hover effect for the link */
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Order Information</h1>
+        <form id="requestForm" method="POST" onsubmit="return showProcessingPopup(event);">
+            <label for="order_id">Order ID:</label>
+            <input type="text" name="order_id" required>
+            <label for="email">Email:</label>
+            <input type="email" name="email" required>
+            <label for="access_code">Access Code:</label>
+            <input type="text" name="access_code" id="access_code" required maxlength="8" pattern="[A-Z]{8}" title="Access code must be 8 uppercase letters only." oninput="this.value = this.value.toUpperCase();">
+            <input type="submit" value="Submit">
+        </form>
+
+        <!-- Error Popup -->
+        <div class="popup-overlay" id="errorPopup" style="display : none;">
+            <div class="popup-content">
+                <h2>Error</h2>
+                <p id="errorMessage"></p>
+                <button class="close-btn" onclick="closeErrorPopup()">Close</button>
+            </div>
+        </div>
+
+        <!-- Processing Popup -->
+        <div class="popup-overlay" id="processingPopup" style="display: none;">
+            <div class="popup-content">
+                <h2>Please Wait While Processing</h2>
+                <p>Your request is being processed...</p>
+            </div>
+        </div>
+
+        <!-- Success Popup -->
+        <div class="popup-overlay" id="successPopup" style="display: none;">
+            <div class="popup-content">
+                <h2>Success!</h2>
+                <p id="pinCodeMessage"></p>
+                <button class="close-btn" onclick="closeSuccessPopup()">Close</button>
+            </div>
+        </div>
+
+        <!-- Info Popup -->
+        <div class="popup-overlay" id="infoPopup" style="display: none;">
+            <div class="popup-content">
+                <h2>Info</h2>
+                <p id="infoMessage" style="padding: 0px 0px;" class="infoMessage"
+                ></p>
+                <button class="close-btn" onclick="closeInfoPopup()">Close</button>
+            </div>
+        </div>
+
+        <div class="footer">
+             For any questions or concerns, please contact our
+             <a href="https://direct.lc.chat/18721317/
+            ">Customer Support</a>
+        </div>
+
+        <!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul>
+      {% for category, message in messages %}
+        {% if category == 'error' %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.getElementById('errorMessage').innerText = {{ message|tojson }};
+                    document.getElementById('errorPopup').style.display = 'flex';
+                });
+            </script>
+        {% elif category == 'success' %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Check if the message contains a PIN code
+                    let successMessage = {{ message|tojson }};
+                    let pinCodeMatch = successMessage.match(/Your 5-digit pin code is: (\d{5})/);
+
+                    if (pinCodeMatch) {
+                        let pinCode = pinCodeMatch[1];
+                        // Format the pin code as bold and larger, append extra information
+                        document.getElementById('pinCodeMessage').innerHTML = `
+                            Your 5-digit pin code is: <strong style="font-size: 1.5rem;">${pinCode}</strong><br>
+                            Password: ${successMessage.split(pinCode)[1].trim()}<br><br>
+                            <strong>How to download the game?</strong><br>
+                            Go to the eshop<br>
+                            Go to avatar<br>
+                            Go to Redownload<br><br>
+                            Still not found it? Come to psnaccounts and <strong>click on chat now</strong>.
+                        `;
+                    } else {
+                        document.getElementById('pinCodeMessage').innerText = successMessage;
+                    }
+                    document.getElementById('successPopup').style.display = 'flex';
+                });
+            </script>
+        {% elif category == 'info' %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let message = {{ message|tojson }};
+        let infoMessage = `
+            Dear Customer,<br><br>
+
+            <strong>Already logged in</strong><br><br>
+
+            <strong>Password: ${message}</strong><br><br>
+
+            You cannot log in twice.
+
+            Do you need help? Come to PSNAccounts and click on "Chat Now."
+        `;
+
+        document.getElementById('infoMessage').innerHTML = infoMessage;
+        document.getElementById('infoPopup').style.display = 'flex';
+    });
+</script>
+
+
+
+
+        {% endif %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+    </div>
+
+    <script>
+        function closeErrorPopup() {
+            document.getElementById('errorPopup').style.display = 'none';
+        }
+
+        function closeSuccessPopup() {
+            document.getElementById('successPopup').style.display = 'none';
+        }
+
+        function closeInfoPopup() {
+            document.getElementById('infoPopup').style.display = 'none';
+        }
+
+        function showProcessingPopup(event) {
+            document.getElementById('processingPopup').style.display = 'flex';
+            // Allow the form to submit after a short delay
+            setTimeout(function() {
+                return true;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

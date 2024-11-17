@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Orders</title>
+</head>
+<body>
+    <h1>Saved Orders</h1>
+    <ul>
+        {% for order in orders %}
+            <li>Order ID: {{ order.id }}, Customer: {{ order.customer_name }}, Product: {{ order.product_name }}</li>
+        {% else %}
+            <li>No orders found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

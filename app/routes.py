@@ -23,20 +23,19 @@ main_bp = Blueprint('main', __name__)
 g_driver = None
 
 
-import os
-from selenium.common.exceptions import WebDriverException
-
 def browser_init():
     global g_driver
     if g_driver is None:
         try:
-            # Load proxy credentials
-            proxy_username = os.getenv("PROXY_USERNAME")
-            proxy_password = os.getenv("PROXY_PASSWORD")
-            proxy_address = os.getenv("PROXY_ADDRESS", "gw.dataimpulse.com")
-            proxy_port = os.getenv("PROXY_PORT", "16000")
+            proxy_username = "9fa3c330655cbd7ee012"
+            proxy_password = "3607b7d7a975d149"
+            proxy_address = "gw.dataimpulse.com"
+            proxy_port = "16000"
+
+            # formulate the proxy URL with authentication for dataimpulse
             proxy_url = f"http://{proxy_username}:{proxy_password}@{proxy_address}:{proxy_port}"
 
+            # Set Chrome options
             chrome_options = Options()
             chrome_options.add_argument("--disable-gpu")
             chrome_options.add_argument("--disable-dev-shm-usage")
@@ -46,19 +45,22 @@ def browser_init():
                 "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
             )
 
+            # Set up the WebDriver
             g_driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
+            # Open a new browser window
+            g_driver.execute_script("window.open('');")
+            g_driver.switch_to.window(g_driver.window_handles[0])
             g_driver.get('https://accounts.nintendo.com')
+
+            # Clean up the WebDriver when the application exits
             atexit.register(cleanup_driver)
 
-            print("Browser started successfully!")
-        except WebDriverException as e:
-            print(f"WebDriver error: {e}")
-            g_driver = None
-        except Exception as e:
-            print(f"Unexpected error during browser setup: {e}")
+            print('Chrome started successfully!')
+        except Exception as error:
+            print(f"Error during WebDriver or automation process - {error}")
             g_driver = None
     return g_driver
-
 
 
 def cleanup_driver():

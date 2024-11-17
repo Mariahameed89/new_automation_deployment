@@ -32,19 +32,9 @@ def browser_init():
             proxy_address = "gw.dataimpulse.com"
             proxy_port = "16000"
 
-            # formulate the proxy URL with authentication for dataimpulse
+            # formulate the proxy url with authentication for dataimpulse
             proxy_url = f"http://{proxy_username}:{proxy_password}@{proxy_address}:{proxy_port}"
 
-            # Set Chrome options
-            chrome_options = Options()
-            chrome_options.add_argument("--disable-gpu")
-            chrome_options.add_argument("--disable-dev-shm-usage")
-            chrome_options.add_argument("--ignore-certificate-errors")
-            chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-            chrome_options.add_argument(
-                "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-            )
-                        # Set proxy options for SeleniumWire
             # Set proxy options for SeleniumWire
             proxy_options = {
                 "proxy": {
@@ -52,9 +42,20 @@ def browser_init():
                     "https": proxy_url
                 }
             }
+            # Set Chrome options
+            chrome_options = Options()
+            # chrome_options.add_argument("--headless=new")
+            chrome_options.add_argument("--disable-extensions")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--ignore-certificate-errors")
+            chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+            chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 
             # Set up the WebDriver
-           # g_driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+            # local environment
+          #  g_driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
             # Heroku environment
             chromedriver_path = "/app/.chrome-for-testing/chromedriver-linux64/chromedriver"
@@ -75,12 +76,12 @@ def browser_init():
             g_driver = None
     return g_driver
 
-
 def cleanup_driver():
     global g_driver
     if g_driver is not None:
-        g_driver.get("https://accounts.nintendo.com")
-        g_driver.delete_all_cookies()
+        g_driver.quit()
+        g_driver = None
+
 
 
 @main_bp.route('/')

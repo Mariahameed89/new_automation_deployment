@@ -44,9 +44,15 @@ def browser_init():
             chrome_options.add_argument(
                 "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
             )
+            
 
             # Set up the WebDriver
-            g_driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+           # g_driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
+            # Heroku environment
+            chromedriver_path = "/app/.chrome-for-testing/chromedriver-linux64/chromedriver"
+            g_driver = webdriver.Chrome(service=Service(chromedriver_path), options=chrome_options, seleniumwire_options=proxy_options)
+            
 
             # Open a new browser window
             g_driver.execute_script("window.open('');")

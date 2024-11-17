@@ -44,7 +44,14 @@ def browser_init():
             chrome_options.add_argument(
                 "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
             )
-            
+                        # Set proxy options for SeleniumWire
+            # Set proxy options for SeleniumWire
+            proxy_options = {
+                "proxy": {
+                    "http": proxy_url,
+                    "https": proxy_url
+                }
+            }
 
             # Set up the WebDriver
            # g_driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
